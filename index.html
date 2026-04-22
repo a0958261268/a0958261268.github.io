@@ -1,271 +1,624 @@
 <!DOCTYPE html>
 <html lang="zh-TW" class="scroll-smooth">
 <head>
+    <!--
+        =====================================================================
+        阿銘極速電腦維修 - 綠界審核較容易接受的首頁版本
+        ---------------------------------------------------------------------
+        本版本調整重點：
+        1. 新增「參考收費 / 價目表」區塊，讓審核方可直接看到價格。
+        2. 新增「收費規則 / 取消與退款 / 付款方式 / 服務地區」區塊。
+        3. 補齊原本導覽列中的 #process 區塊，避免連結存在但頁面沒有內容。
+        4. 保留原本 LINE 與 Email 聯絡方式，避免聯絡資訊不一致。
+        5. 在程式內加入較完整的繁體中文註解，方便後續自行維護。
+        =====================================================================
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="阿銘極速電腦維修提供桌機維修、筆電維修、系統重灌、資料救援、電腦升級與 LINE 線上諮詢服務。">
+
+    <!-- SEO 與頁面摘要：描述要更清楚說明有服務內容與參考收費 -->
+    <meta name="description" content="阿銘極速電腦維修提供桌機維修、筆電維修、系統重灌、資料救援、網路設定與到府服務，網站公開參考收費與服務流程。">
     <meta name="theme-color" content="#1E3A8A">
-    <title>阿銘極速電腦維修 | 專業到府・線上報價</title>
-    <!-- 引入 Tailwind CSS -->
+
+    <title>阿銘極速電腦維修｜桌機・筆電維修・公開參考收費</title>
+
+    <!-- Tailwind CSS：使用 CDN，部署在 GitHub Pages 時最簡單 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 FontAwesome 圖示 -->
+
+    <!-- Font Awesome：提供圖示，例如電腦、LINE、工具、價錢等圖示 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script>
+        // Tailwind 顏色客製設定
+        // 這裡定義整站常用色，之後 class 可直接使用 primary / secondary / line。
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        line: '#06C755', // LINE 官方綠色
-                        primary: '#1E3A8A', // 深藍色
-                        secondary: '#3B82F6' // 亮藍色
+                        line: '#06C755',      // LINE 官方綠
+                        primary: '#1E3A8A',   // 深藍主色
+                        secondary: '#3B82F6', // 次要亮藍色
+                        accent: '#F59E0B'     // 強調色：金黃，用於價格 / 提醒
                     }
                 }
             }
         }
     </script>
+
     <style>
-        /* 自訂樣式補充 */
+        /*
+            glass-effect：導覽列半透明玻璃效果
+            讓固定導覽列在滑動時不會太突兀。
+        */
         .glass-effect {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+        }
+
+        /*
+            price-card-hover：價目卡片的滑動陰影效果
+            只是視覺加分，不影響功能。
+        */
+        .price-card-hover {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .price-card-hover:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.10);
         }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">
 
-    <!-- 導覽列 -->
+    <!-- ================================================================ -->
+    <!-- 固定導覽列 -->
+    <!-- ================================================================ -->
     <nav class="fixed w-full z-50 glass-effect border-b border-gray-200 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
+
+                <!-- 左上角品牌名稱 -->
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="#" class="text-2xl font-bold text-primary flex items-center gap-2">
-                        <i class="fa-solid fa-computer"></i> 阿銘極速電腦維修
+                    <a href="#" class="text-xl md:text-2xl font-bold text-primary flex items-center gap-2">
+                        <i class="fa-solid fa-computer"></i>
+                        <span>阿銘極速電腦維修</span>
                     </a>
                 </div>
+
                 <!-- 桌面版選單 -->
-                <div class="hidden md:flex space-x-8 items-center">
+                <div class="hidden md:flex space-x-6 items-center">
                     <a href="#services" class="text-gray-600 hover:text-secondary font-medium transition">服務項目</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-secondary font-medium transition">參考收費</a>
                     <a href="#process" class="text-gray-600 hover:text-secondary font-medium transition">維修流程</a>
+                    <a href="#policy" class="text-gray-600 hover:text-secondary font-medium transition">服務說明</a>
                     <a href="#contact" class="bg-line text-white px-5 py-2 rounded-full font-bold hover:bg-green-600 transition shadow-md flex items-center gap-2">
                         <i class="fa-brands fa-line text-xl"></i> 立即聯絡
                     </a>
                 </div>
-                <!-- 手機版選單按鈕 -->
+
+                <!-- 手機版漢堡選單按鈕 -->
                 <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-primary focus:outline-none">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-primary focus:outline-none" aria-label="開啟選單">
                         <i class="fa-solid fa-bars text-2xl"></i>
                     </button>
                 </div>
             </div>
         </div>
-        <!-- 手機版選單 (預設隱藏) -->
+
+        <!-- 手機版選單 -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="#services" class="block px-3 py-2 text-gray-700 font-medium hover:bg-gray-50 rounded-md">服務項目</a>
+                <a href="#pricing" class="block px-3 py-2 text-gray-700 font-medium hover:bg-gray-50 rounded-md">參考收費</a>
                 <a href="#process" class="block px-3 py-2 text-gray-700 font-medium hover:bg-gray-50 rounded-md">維修流程</a>
-                <a href="#contact" class="block px-3 py-2 text-line font-bold hover:bg-gray-50 rounded-md"><i class="fa-brands fa-line"></i> 加入 LINE 預約</a>
+                <a href="#policy" class="block px-3 py-2 text-gray-700 font-medium hover:bg-gray-50 rounded-md">服務說明</a>
+                <a href="#contact" class="block px-3 py-2 text-line font-bold hover:bg-gray-50 rounded-md">
+                    <i class="fa-brands fa-line"></i> 加入 LINE 預約
+                </a>
             </div>
         </div>
     </nav>
 
-    <!-- 橫幅區塊 (Hero) -->
-    <header class="relative pt-24 pb-16 md:pt-32 md:pb-24 flex items-center justify-center min-h-[80vh] overflow-hidden">
-        <!-- 背景圖與遮罩 -->
+    <!-- ================================================================ -->
+    <!-- Hero 首屏 -->
+    <!-- ================================================================ -->
+    <header class="relative pt-24 pb-16 md:pt-32 md:pb-24 flex items-center justify-center min-h-[88vh] overflow-hidden">
+        <!-- 背景圖 -->
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="電腦維修" class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gray-900 bg-opacity-70"></div>
+            <img
+                src="https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
+                alt="電腦維修背景"
+                class="w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-slate-900/75"></div>
         </div>
-        
-        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
-            <span class="inline-block py-1 px-3 rounded-full bg-secondary bg-opacity-20 text-blue-300 text-sm font-semibold tracking-wider mb-4 border border-blue-400/30">專業・快速・安心</span>
+
+        <!-- 文字主體 -->
+        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
+            <span class="inline-block py-1.5 px-4 rounded-full bg-secondary/20 text-blue-200 text-sm font-semibold tracking-wider mb-4 border border-blue-300/30">
+                桌機・筆電維修・系統處理・資料救援
+            </span>
+
             <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">
-                您的電腦問題 <br class="md:hidden" />我們來解決
+                電腦有問題，<br class="md:hidden">先看得到服務，再看得到價格
             </h1>
-            <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-                桌機升級、筆電維修、系統重灌、資料救援。提供快速檢測與透明報價，讓您的愛機恢復最佳狀態。
+
+            <p class="text-lg md:text-xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
+                提供桌機維修、筆電維修、系統重灌、網路與週邊設定、資料救援與升級服務。<br>
+                本網站公開列出參考收費、服務流程、付款方式與聯絡資訊，方便您先了解再預約。
             </p>
+
+            <!-- 首屏快速價格資訊：這一段對審核很重要，因為一進首頁就看得到收費 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
+                <div class="bg-white/10 border border-white/15 rounded-2xl p-5 text-white backdrop-blur-sm">
+                    <div class="text-sm text-gray-300 mb-1">LINE 線上初步諮詢</div>
+                    <div class="text-2xl font-bold">免費</div>
+                </div>
+                <div class="bg-white/10 border border-white/15 rounded-2xl p-5 text-white backdrop-blur-sm">
+                    <div class="text-sm text-gray-300 mb-1">到店檢測費</div>
+                    <div class="text-2xl font-bold">NT$300 起</div>
+                </div>
+                <div class="bg-white/10 border border-white/15 rounded-2xl p-5 text-white backdrop-blur-sm">
+                    <div class="text-sm text-gray-300 mb-1">到府檢測費</div>
+                    <div class="text-2xl font-bold">NT$500 起</div>
+                </div>
+            </div>
+
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#contact" class="bg-line hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
-                    <i class="fa-brands fa-line text-2xl"></i> 加 LINE 免費諮詢
+                <a href="#pricing" class="bg-accent hover:bg-amber-500 text-white font-bold py-4 px-8 rounded-full shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
+                    <i class="fa-solid fa-tags"></i> 查看參考收費
                 </a>
-                <a href="#services" class="bg-white hover:bg-gray-100 text-primary font-bold py-4 px-8 rounded-full shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
-                    了解服務項目 <i class="fa-solid fa-arrow-down"></i>
+                <a href="#contact" class="bg-line hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
+                    <i class="fa-brands fa-line text-2xl"></i> 加 LINE 詢問
                 </a>
             </div>
         </div>
     </header>
 
+    <!-- ================================================================ -->
     <!-- 服務項目 -->
+    <!-- ================================================================ -->
     <section id="services" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">專業維修服務</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">服務項目</h2>
                 <div class="w-24 h-1 bg-secondary mx-auto rounded"></div>
-                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">我們提供全方位的電腦維修與升級服務，無論是硬體故障還是軟體異常，都能為您處理。</p>
+                <p class="mt-4 text-gray-600 max-w-3xl mx-auto">
+                    提供桌機、筆電、網路與系統相關服務。以下為主要服務內容，詳細費用請參考下方價目表。
+                </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- 服務項目 1 -->
                 <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300 group">
                     <div class="w-16 h-16 bg-blue-100 text-secondary rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-desktop"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">桌機維修與升級</h3>
-                    <p class="text-gray-600">無法開機、藍底白字、頻繁當機檢修。顯示卡、記憶體、固態硬碟(SSD)升級服務。</p>
+                    <p class="text-gray-600 leading-relaxed">無法開機、當機、藍底白字、風扇異音、記憶體／SSD／顯示卡升級。</p>
+                    <p class="mt-4 text-sm font-semibold text-secondary">參考收費：檢測 NT$300 起，升級工資 NT$500 起</p>
                 </div>
-                <!-- 服務項目 2 -->
+
                 <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300 group">
                     <div class="w-16 h-16 bg-blue-100 text-secondary rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-laptop"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">筆電專業維修</h3>
-                    <p class="text-gray-600">面板破裂更換、鍵盤無反應、電池膨脹更換、散熱清潔與散熱膏重塗。</p>
+                    <p class="text-gray-600 leading-relaxed">散熱清潔、鍵盤異常、電池更換、面板更換、無法開機檢修。</p>
+                    <p class="mt-4 text-sm font-semibold text-secondary">參考收費：保養清潔 NT$600 起</p>
                 </div>
-                <!-- 服務項目 3 -->
+
                 <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300 group">
                     <div class="w-16 h-16 bg-blue-100 text-secondary rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
                         <i class="fa-brands fa-windows"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">系統安裝與解毒</h3>
-                    <p class="text-gray-600">Windows 系統重灌、中毒處理、木馬清除、系統優化與必備軟體安裝。</p>
+                    <p class="text-gray-600 leading-relaxed">Windows 系統重灌、中毒清除、木馬處理、驅動安裝、基本軟體安裝。</p>
+                    <p class="mt-4 text-sm font-semibold text-secondary">參考收費：NT$800 起</p>
                 </div>
-                <!-- 服務項目 4 -->
+
                 <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300 group">
                     <div class="w-16 h-16 bg-blue-100 text-secondary rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-hard-drive"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">資料救援服務</h3>
-                    <p class="text-gray-600">誤刪檔案、硬碟損壞、隨身碟無法讀取。提供專業資料救援與備份方案。</p>
+                    <p class="text-gray-600 leading-relaxed">誤刪檔案、硬碟讀不到、隨身碟無法存取、資料備份與搬移。</p>
+                    <p class="mt-4 text-sm font-semibold text-secondary">參考收費：NT$1,500 起</p>
                 </div>
-                <!-- 服務項目 5 -->
+
                 <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300 group">
                     <div class="w-16 h-16 bg-blue-100 text-secondary rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-microchip"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">客製化電腦組裝</h3>
-                    <p class="text-gray-600">電競主機、影音剪輯機、文書辦公機。依您的預算與需求，量身打造專屬電腦。</p>
+                    <p class="text-gray-600 leading-relaxed">依預算與需求規劃文書機、遊戲機、影音剪輯機與升級方案。</p>
+                    <p class="mt-4 text-sm font-semibold text-secondary">參考收費：組裝工資 NT$1,000 起</p>
                 </div>
-                <!-- 服務項目 6 -->
+
                 <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300 group">
                     <div class="w-16 h-16 bg-blue-100 text-secondary rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-network-wired"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">網路與週邊設定</h3>
-                    <p class="text-gray-600">無線分享器設定、印表機安裝、辦公室區域網路架設與連線異常排除。</p>
+                    <p class="text-gray-600 leading-relaxed">無線分享器、印表機安裝、網路異常排除、基本辦公設備連線設定。</p>
+                    <p class="mt-4 text-sm font-semibold text-secondary">參考收費：NT$500 起</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 聯絡與表單區塊 -->
-    <section id="contact" class="py-20 bg-gray-50">
+    <!-- ================================================================ -->
+    <!-- 參考收費 / 價目表 -->
+    <!-- 這一區是綠界審核最重要的補強點 -->
+    <!-- ================================================================ -->
+    <section id="pricing" class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row">
-                
-                <!-- 左側：聯絡資訊與 LINE QR Code -->
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">公開參考收費</h2>
+                <div class="w-24 h-1 bg-accent mx-auto rounded"></div>
+                <p class="mt-4 text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    以下價格皆為 <span class="font-bold">新台幣 NTD 參考起始價</span>。
+                    實際金額仍需依設備型號、故障狀況、是否需更換零件與作業時間確認，報價經您同意後才會進行施工。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-2xl p-6 border border-gray-200 price-card-hover">
+                    <div class="text-sm text-gray-500 mb-2">到店檢測費</div>
+                    <div class="text-3xl font-extrabold text-primary mb-3">NT$300 起</div>
+                    <p class="text-sm text-gray-600">適用桌機、筆電基本故障檢測與初步判斷。</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border border-gray-200 price-card-hover">
+                    <div class="text-sm text-gray-500 mb-2">到府檢測費</div>
+                    <div class="text-3xl font-extrabold text-primary mb-3">NT$500 起</div>
+                    <p class="text-sm text-gray-600">依地區、交通與服務內容調整，偏遠地區另議。</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border border-gray-200 price-card-hover">
+                    <div class="text-sm text-gray-500 mb-2">Windows 系統重灌</div>
+                    <div class="text-3xl font-extrabold text-primary mb-3">NT$800 起</div>
+                    <p class="text-sm text-gray-600">含系統安裝、驅動設定與基本常用軟體安裝。</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border border-gray-200 price-card-hover">
+                    <div class="text-sm text-gray-500 mb-2">中毒清除 / 系統優化</div>
+                    <div class="text-3xl font-extrabold text-primary mb-3">NT$800 起</div>
+                    <p class="text-sm text-gray-600">依感染程度、系統狀態與處理時間調整。</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border border-gray-200 price-card-hover">
+                    <div class="text-sm text-gray-500 mb-2">筆電清潔保養</div>
+                    <div class="text-3xl font-extrabold text-primary mb-3">NT$600 起</div>
+                    <p class="text-sm text-gray-600">含基本拆機清潔、風扇與散熱模組除塵。</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border border-gray-200 price-card-hover">
+                    <div class="text-sm text-gray-500 mb-2">SSD / 記憶體升級工資</div>
+                    <div class="text-3xl font-extrabold text-primary mb-3">NT$500 起</div>
+                    <p class="text-sm text-gray-600">零件費另計，安裝前會先確認相容性與報價。</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border border-gray-200 price-card-hover">
+                    <div class="text-sm text-gray-500 mb-2">資料救援</div>
+                    <div class="text-3xl font-extrabold text-primary mb-3">NT$1,500 起</div>
+                    <p class="text-sm text-gray-600">依損壞程度、容量大小、是否需深層處理另行估價。</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border border-gray-200 price-card-hover">
+                    <div class="text-sm text-gray-500 mb-2">網路 / 印表機設定</div>
+                    <div class="text-3xl font-extrabold text-primary mb-3">NT$500 起</div>
+                    <p class="text-sm text-gray-600">適用分享器設定、印表機安裝與一般網路排障。</p>
+                </div>
+            </div>
+
+            <!-- 價格備註 -->
+            <div class="mt-10 bg-white border border-amber-200 rounded-2xl p-6 md:p-8">
+                <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation text-accent"></i>
+                    收費補充說明
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6 text-gray-700 leading-relaxed">
+                    <ul class="space-y-2 list-disc list-inside">
+                        <li>本頁價格為參考起始價，實際報價依設備狀況、品牌型號與作業難度調整。</li>
+                        <li>若需更換硬碟、記憶體、電池、面板等零件，零件費將另行報價。</li>
+                        <li>正式維修前會先與客戶確認費用，未經同意不施工。</li>
+                    </ul>
+                    <ul class="space-y-2 list-disc list-inside">
+                        <li>如僅需諮詢與初步判斷，可先透過 LINE 洽詢。</li>
+                        <li>到府服務將視區域、交通與設備數量調整費用。</li>
+                        <li>網站公開價格僅供參考，最終仍以確認報價單為準。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 維修流程 -->
+    <!-- 原始檔案導覽列有 #process，但頁面實際沒有此區塊；這裡補上 -->
+    <!-- ================================================================ -->
+    <section id="process" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">維修流程</h2>
+                <div class="w-24 h-1 bg-secondary mx-auto rounded"></div>
+                <p class="mt-4 text-gray-600 max-w-3xl mx-auto">先詢問、再檢測、再報價、確認後才處理，流程清楚透明。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 text-center">
+                    <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-xl font-bold">1</div>
+                    <h3 class="font-bold text-lg mb-2">聯絡描述問題</h3>
+                    <p class="text-gray-600 text-sm">透過 LINE 或 Email 提供設備型號、症狀與需求。</p>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 text-center">
+                    <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-xl font-bold">2</div>
+                    <h3 class="font-bold text-lg mb-2">初步判斷與預約</h3>
+                    <p class="text-gray-600 text-sm">安排到店或到府檢測，說明可能費用區間。</p>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 text-center">
+                    <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-xl font-bold">3</div>
+                    <h3 class="font-bold text-lg mb-2">實際檢測</h3>
+                    <p class="text-gray-600 text-sm">進一步確認故障原因，判斷是否需要更換零件。</p>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 text-center">
+                    <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-xl font-bold">4</div>
+                    <h3 class="font-bold text-lg mb-2">確認報價後施工</h3>
+                    <p class="text-gray-600 text-sm">客戶同意報價後才會正式維修，不會自行加修。</p>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 text-center">
+                    <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-xl font-bold">5</div>
+                    <h3 class="font-bold text-lg mb-2">交機與付款</h3>
+                    <p class="text-gray-600 text-sm">確認設備狀況後交件，依雙方確認之方式完成付款。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 服務說明 / 收費規則 / 付款方式 / 退款取消 -->
+    <!-- 這一區能提升審核可信度 -->
+    <!-- ================================================================ -->
+    <section id="policy" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">服務說明</h2>
+                <div class="w-24 h-1 bg-secondary mx-auto rounded"></div>
+                <p class="mt-4 text-gray-600 max-w-3xl mx-auto">為方便客戶與平台審核了解，本網站公開說明服務方式、付款方式與取消規則。</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-2xl border border-gray-200 p-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                        <i class="fa-solid fa-file-invoice-dollar text-secondary"></i>
+                        收費規則
+                    </h3>
+                    <ul class="space-y-3 text-gray-700 leading-relaxed list-disc list-inside">
+                        <li>LINE 線上初步諮詢免費，正式檢測與維修依服務內容收費。</li>
+                        <li>到店檢測費 NT$300 起，到府檢測費 NT$500 起。</li>
+                        <li>系統重灌、資料救援、升級安裝與清潔保養皆依項目收費。</li>
+                        <li>如需更換零件，零件費另計，將於維修前先行告知。</li>
+                        <li>未經客戶確認報價前，不會直接進行付費維修。</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-200 p-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                        <i class="fa-solid fa-credit-card text-secondary"></i>
+                        付款方式
+                    </h3>
+                    <ul class="space-y-3 text-gray-700 leading-relaxed list-disc list-inside">
+                        <li>可依實際服務情況提供現金、轉帳或線上付款方式。</li>
+                        <li>線上收款項目將依平台審核通過後之開通功能提供。</li>
+                        <li>付款金額以雙方確認之最終報價為準。</li>
+                        <li>本網站所列金額均為新台幣 NTD。</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-200 p-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-left text-secondary"></i>
+                        取消與退款說明
+                    </h3>
+                    <ul class="space-y-3 text-gray-700 leading-relaxed list-disc list-inside">
+                        <li>若尚未開始處理，可於事前通知取消預約。</li>
+                        <li>已完成檢測者，仍可能依檢測作業收取檢測費。</li>
+                        <li>若已代購零件或已完成服務，將依實際已發生費用結算。</li>
+                        <li>如有退款需求，可透過 LINE 或 Email 聯繫協調處理。</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-200 p-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-secondary"></i>
+                        服務地區與聯絡資料
+                    </h3>
+                    <ul class="space-y-3 text-gray-700 leading-relaxed list-disc list-inside">
+                        <li>服務型態：到店、到府、線上諮詢。</li>
+                        <li>LINE ID：0987373773</li>
+                        <li>Email：a0958261268@gmail.com</li>
+                        <li>服務時段可先以 LINE 聯絡確認。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 聯絡與表單 -->
+    <!-- ================================================================ -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-gray-200">
+
+                <!-- 左側：聯絡資訊 -->
                 <div class="bg-primary text-white p-10 lg:w-2/5 flex flex-col justify-between relative overflow-hidden">
-                    <!-- 背景裝飾 -->
                     <div class="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-secondary rounded-full opacity-20 blur-3xl"></div>
-                    
+
                     <div class="relative z-10">
                         <h2 class="text-3xl font-bold mb-2">聯絡我們</h2>
-                        <p class="text-blue-200 mb-8">加入 LINE 好友，立即為您線上初步診斷與報價。</p>
-                        
+                        <p class="text-blue-200 mb-8 leading-relaxed">
+                            加入 LINE 好友，可先提供設備型號、故障狀況與需求，便於安排檢測與報價。
+                        </p>
+
                         <div class="space-y-6">
-                            <button type="button" id="copy-line-id" class="w-full text-left flex items-center gap-4 bg-white/10 p-4 rounded-xl border border-white/20 hover:bg-white/15 transition cursor-pointer">
+                            <!--
+                                按鈕設計成可複製 LINE ID。
+                                使用 button 而不是純 div，好處是語意正確、可點擊、無障礙性較好。
+                            -->
+                            <button
+                                type="button"
+                                id="copy-line-id"
+                                class="w-full text-left flex items-center gap-4 bg-white/10 p-4 rounded-xl border border-white/20 hover:bg-white/15 transition cursor-pointer"
+                            >
                                 <div class="w-12 h-12 bg-line rounded-full flex items-center justify-center text-2xl flex-shrink-0">
                                     <i class="fa-brands fa-line"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-blue-200">LINE ID (點擊複製或掃碼)</p>
+                                    <p class="text-sm text-blue-200">LINE ID（點擊可複製）</p>
                                     <p class="text-xl font-bold tracking-wider">0987373773</p>
                                 </div>
                             </button>
 
+                            <!-- LINE QR Code -->
                             <div class="flex justify-center py-6 bg-white rounded-xl shadow-inner">
-                                <!-- 使用 QR Server API 自動將 LINE 連結轉為 QR Code -->
-                                <!-- LINE 連結格式為 https://line.me/ti/p/~你的ID -->
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://line.me/ti/p/~0987373773&margin=10" alt="LINE QR Code" class="w-48 h-48 border-4 border-gray-100 rounded-lg shadow-sm">
+                                <img
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://line.me/ti/p/~0987373773&margin=10"
+                                    alt="LINE QR Code"
+                                    class="w-48 h-48 border-4 border-gray-100 rounded-lg shadow-sm"
+                                >
                             </div>
-                            <div class="text-center text-sm text-blue-200">
-                                手機瀏覽時，可直接點擊下方按鈕加入
-                            </div>
-                            <a href="https://line.me/ti/p/~0987373773" target="_blank" rel="noopener noreferrer" class="block w-full bg-line hover:bg-green-600 text-white text-center font-bold py-3 rounded-xl transition shadow-md">
+
+                            <div class="text-center text-sm text-blue-200">手機瀏覽時，可直接點下方按鈕加入</div>
+
+                            <a
+                                href="https://line.me/ti/p/~0987373773"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="block w-full bg-line hover:bg-green-600 text-white text-center font-bold py-3 rounded-xl transition shadow-md"
+                            >
                                 開啟 LINE 應用程式
                             </a>
+
+                            <div class="bg-white/10 rounded-xl p-4 border border-white/10 text-sm leading-relaxed text-blue-100">
+                                <p><span class="font-bold text-white">聯絡 Email：</span>a0958261268@gmail.com</p>
+                                <p class="mt-1"><span class="font-bold text-white">收費提醒：</span>網站已有公開參考收費，正式維修前仍會先報價確認。</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 右側：自動 Email 留言表單 -->
-                <div class="p-10 lg:w-3/5">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-6">線上留言報修</h3>
-                    <p class="text-gray-500 mb-8">請留下您的聯絡方式與電腦狀況，系統會先替您建立 Email 草稿，接著開啟您的預設郵件程式；您確認內容後送出即可。<br><span class="text-sm font-semibold text-secondary">接收信箱：a0958261268@gmail.com</span></p>
+                <!-- 右側：留言表單 -->
+                <div class="p-10 lg:w-3/5 bg-gray-50">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">線上留言報修</h3>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        請留下您的聯絡方式與設備狀況。送出後，系統會先建立 Email 草稿並開啟您的預設郵件程式，您確認內容後再寄出即可。<br>
+                        <span class="text-sm font-semibold text-secondary">接收信箱：a0958261268@gmail.com</span>
+                    </p>
 
                     <form id="repairForm" onsubmit="sendEmail(event)" class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">您的姓名 *</label>
-                                <input type="text" id="name" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition bg-gray-50" placeholder="例如：王小明">
+                                <input
+                                    type="text"
+                                    id="name"
+                                    required
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition bg-white"
+                                    placeholder="例如：王小明"
+                                >
                             </div>
                             <div>
                                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">聯絡電話 *</label>
-                                <input type="tel" id="phone" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition bg-gray-50" placeholder="例如：0912345678">
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    required
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition bg-white"
+                                    placeholder="例如：0912345678"
+                                >
                             </div>
                         </div>
 
                         <div>
                             <label for="device" class="block text-sm font-medium text-gray-700 mb-2">設備類型</label>
-                            <select id="device" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition bg-gray-50">
+                            <select id="device" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition bg-white">
                                 <option value="桌上型電腦">桌上型電腦</option>
                                 <option value="筆記型電腦">筆記型電腦</option>
+                                <option value="印表機 / 網路設備">印表機 / 網路設備</option>
                                 <option value="其他">其他設備</option>
                             </select>
                         </div>
 
                         <div>
                             <label for="message" class="block text-sm font-medium text-gray-700 mb-2">問題描述 *</label>
-                            <textarea id="message" rows="4" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition bg-gray-50" placeholder="請簡述您的電腦遇到了什麼狀況？例如：開機沒畫面、跑很慢、需要重灌..."></textarea>
+                            <textarea
+                                id="message"
+                                rows="5"
+                                required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition bg-white"
+                                placeholder="請描述您的問題，例如：開機沒畫面、系統很慢、需要重灌、需要資料救援、想升級 SSD..."
+                            ></textarea>
+                        </div>
+
+                        <div class="bg-blue-50 text-blue-900 border border-blue-200 rounded-xl p-4 text-sm leading-relaxed">
+                            小提醒：若僅需初步判斷，可先使用 LINE 諮詢；正式維修或到府服務仍將依實際項目進行報價。
                         </div>
 
                         <button type="submit" class="w-full bg-primary hover:bg-blue-800 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                            <i class="fa-regular fa-paper-plane"></i> 建立 Email 草稿
+                            <i class="fa-regular fa-paper-plane"></i>
+                            建立 Email 草稿
                         </button>
                     </form>
                 </div>
-
             </div>
         </div>
     </section>
 
+    <!-- ================================================================ -->
     <!-- 頁尾 -->
+    <!-- ================================================================ -->
     <footer class="bg-gray-900 text-gray-400 py-12 text-center">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-center items-center gap-2 text-2xl font-bold text-white mb-6">
-                <i class="fa-solid fa-computer text-secondary"></i> 阿銘極速電腦維修
+                <i class="fa-solid fa-computer text-secondary"></i>
+                阿銘極速電腦維修
             </div>
+
             <p class="mb-2">LINE ID：0987373773</p>
-            <p class="mb-6">Email：a0958261268@gmail.com</p>
+            <p class="mb-2">Email：a0958261268@gmail.com</p>
+            <p class="mb-6">服務內容：桌機維修、筆電維修、系統重灌、資料救援、網路與週邊設定</p>
+
             <div class="flex justify-center space-x-4 mb-8">
-                <a href="https://line.me/ti/p/~0987373773" target="_blank" rel="noopener noreferrer" aria-label="加入 LINE" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-line text-white transition"><i class="fa-brands fa-line"></i></a>
-                <a href="mailto:a0958261268@gmail.com" aria-label="寄送 Email" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-secondary text-white transition"><i class="fa-regular fa-envelope"></i></a>
+                <a href="https://line.me/ti/p/~0987373773" target="_blank" rel="noopener noreferrer" aria-label="加入 LINE" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-line text-white transition">
+                    <i class="fa-brands fa-line"></i>
+                </a>
+                <a href="mailto:a0958261268@gmail.com" aria-label="寄送 Email" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-secondary text-white transition">
+                    <i class="fa-regular fa-envelope"></i>
+                </a>
             </div>
+
             <p class="text-sm border-t border-gray-800 pt-8">&copy; 2026 阿銘極速電腦維修. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- ================================================================ -->
     <!-- JavaScript 互動功能 -->
+    <!-- ================================================================ -->
     <script>
-        // 手機版導覽列開關
+        // ------------------------------------------------------------
+        // 手機版導覽列控制
+        // ------------------------------------------------------------
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
 
+        // 點漢堡按鈕時切換 hidden class，達成展開 / 收合。
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
 
-        // 點擊選單自動收起 (手機版)
+        // 手機版使用者點任一連結後，自動把選單收起來。
         const mobileLinks = mobileMenu.querySelectorAll('a');
         mobileLinks.forEach(link => {
             link.addEventListener('click', () => {
@@ -273,55 +626,63 @@
             });
         });
 
-        // 點擊複製 LINE ID
+        // ------------------------------------------------------------
+        // 複製 LINE ID
+        // ------------------------------------------------------------
         const copyLineIdBtn = document.getElementById('copy-line-id');
         if (copyLineIdBtn) {
             copyLineIdBtn.addEventListener('click', async () => {
                 const lineId = '0987373773';
+
                 try {
+                    // navigator.clipboard.writeText()：把指定字串寫入剪貼簿。
+                    // 這屬於現代瀏覽器 API，通常 HTTPS 網站可正常使用。
                     await navigator.clipboard.writeText(lineId);
                     alert(`LINE ID 已複製：${lineId}`);
                 } catch (error) {
+                    // 若瀏覽器權限或環境不支援，就退回提示使用者手動複製。
                     alert(`請手動複製 LINE ID：${lineId}`);
                 }
             });
         }
 
-        // 處理表單發送 Email 的邏輯
+        // ------------------------------------------------------------
+        // 送出表單：建立 mailto 草稿
+        // ------------------------------------------------------------
         function sendEmail(event) {
-            // 防止表單預設的重整送出
+            // preventDefault()：阻止 form 的預設提交行為。
+            // 若不阻止，表單會直接刷新頁面。
             event.preventDefault();
 
-            // 取得表單資料
+            // 取得表單欄位值
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
             const device = document.getElementById('device').value;
             const message = document.getElementById('message').value;
 
-            // 目標 Email
-            const email = "a0958261268@gmail.com";
+            // 收件信箱：保持與網站公開資訊一致
+            const email = 'a0958261268@gmail.com';
 
-            // 設定信件主旨與內容
-            const subject = encodeURIComponent(`【線上報修通知】來自 ${name} 的維修詢問`);
+            // encodeURIComponent()：把中文字、換行、特殊字元轉為 URL 可安全傳送格式。
+            const subject = encodeURIComponent(`【網站報修通知】${name} 的維修詢問`);
             const body = encodeURIComponent(
-                `您好，有客戶透過網站表單留言報修：\n\n` +
+                `您好，這裡是網站表單自動建立的報修內容：\n\n` +
                 `【客戶資料】\n` +
                 `姓名：${name}\n` +
                 `電話：${phone}\n` +
                 `設備類型：${device}\n\n` +
                 `【問題描述】\n` +
                 `${message}\n\n` +
-                `---------------------------------\n` +
-                `請盡快透過電話或 LINE 聯絡客戶。`
+                `【備註】\n` +
+                `正式費用仍依實際檢測與報價確認。\n`
             );
 
-            // 建立 mailto 連結
+            // mailto 格式：讓使用者的預設郵件程式自動打開草稿
             const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
 
-            // 提示使用者
-            alert("系統已準備好您的留言！\n即將開啟您的電子郵件 APP，請確認內容後點擊「發送」即可寄出。");
+            alert('系統已建立報修 Email 草稿，接下來會開啟您的郵件程式，請確認內容後再送出。');
 
-            // 開啟預設 Email 軟體
+            // 跳轉到 mailto 連結
             window.location.href = mailtoLink;
         }
     </script>
